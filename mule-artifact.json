@@ -1,0 +1,4 @@
+{
+  "minMuleVersion": "4.3.0",
+  "secureProperties": ["anypoint.platform.client_secret", "mule.key","secure::sfdc.pwd","secure::sfdc.consumerKey","secure::sfdc.consumerSecret","secure::sfdc.token"]
+}
