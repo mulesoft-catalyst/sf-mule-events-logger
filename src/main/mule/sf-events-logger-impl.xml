@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="log-events-flow" doc:id="e95d9ce5-4e35-4dc6-a6ab-bdc556aa4cf0" >
+		<ee:transform doc:name="Request" doc:id="0bf97179-b259-4b8d-bdfb-fd321e3bb114" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	Endpoint__c: payload.endpoint,
+	Event_Name__c: payload.eventName,
+	Parent_Id__c: payload.parentId,
+	OwnerId: payload.ownerId,
+	Name: payload.logName,
+	Account__c: payload.account,
+	Credit_Bureau__c: payload.creditBureau,
+	Source__c: payload.source,
+	Stack_Trace__c: payload.stackTrace,
+	Status_Code__c: payload.statusCode,
+	Log_Id__c: payload.logId
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create" doc:id="882974df-5dca-482f-a2a2-1228d320010c" config-ref="Salesforce_Config" type="Log__c"/>
+		<ee:transform doc:name="Response" doc:id="162e96d6-8c36-4e01-adc2-68f4615d07c1">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+if (payload.Successful ==true)
+	{ Status: "Success" }
+else 
+	{ 
+		Status: "Failed"
+	}
+
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
