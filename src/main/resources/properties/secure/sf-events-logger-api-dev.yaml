@@ -1,0 +1,15 @@
+  #proxy configuration elements for DEV environment
+api.id: Your_Value
+  
+keystore:
+  path: Your_Value
+  password: Your_Value
+  keyPassword: Your_Value
+  
+#sfdc conection properties
+sfdc.consumerKey: Your_Value
+sfdc.consumerSecret: Your_Value
+sfdc.username: Your_Value
+sfdc.pwd: Your_Value
+sfdc.token: Your_Value
+sfdc.endpoint: Your_Value
