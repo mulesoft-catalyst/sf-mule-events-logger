@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd 
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+
+	  <http:listener-config name="sf-events-logger-api-httpListenerConfig">
+		<http:listener-connection host="0.0.0.0" port="${https.port}" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store type="jks" path="${secure::keystore.path}" keyPassword="${secure::keystore.keyPassword}" password="${secure::keystore.password}" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	
+	<global-property doc:name="Global Property" doc:id="80246567-215a-463b-b017-dce1f120b659" name="mule.env" value="dev" />
+	<global-property doc:name="Global Property" doc:id="371fdf6f-2164-453a-9570-09cbcfb98622" name="mule.key" value="mulesoft" />
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="3c2f2636-5f79-4582-b27f-a93a473e3655" >
+		<salesforce:oauth-user-pass-connection  consumerKey="${secure::sfdc.consumerKey}" consumerSecret="${secure::sfdc.consumerSecret}" username="${secure::sfdc.username}" password="${secure::sfdc.pwd}" securityToken="${secure::sfdc.token}" tokenEndpoint="${secure::sfdc.endpoint}" />
+	</salesforce:sfdc-config>
+	<api-gateway:autodiscovery apiId="${api.id}" doc:name="API Autodiscovery" doc:id="2d07ade9-8fb7-4de0-b89f-934316753343" flowRef="sf-events-logger-api-main" />
+	
+	
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="ff20e235-3745-4d65-b54e-b56155c0f1f3" file="properties/secure/sf-events-logger-api-${mule.env}.yaml" key="${mule.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="81e2dfe6-b50c-4e73-817d-004581f9d851"
+		file="mule-app.properties" />
+    <apikit:config name="sf-events-logger-api-config" api="api/sf-events-logger-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="74aa2ec4-f4ea-4bed-a4e6-34651618b401" file="properties/secure/sf-events-logger-api-${mule.env}.yaml" />
+	
+	
+	
+</mule>
